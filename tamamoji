@@ -1,0 +1,190 @@
+#!/usr/local/bin/node
+
+var fs = require('fs');
+var args = process.argv.slice(2, process.argv.length);
+
+
+
+/* 
+if any moods are true, mood != happy.
+if mood is false, action is not allowed.
+*/
+var date = new Date();
+var timeStamp = date.getHours() * 60 + date.getMinutes();
+timeStamp = timeStamp * 60 + date.getSeconds();
+
+
+var sleepInterval;
+var sleepyIncrease;
+var zCounter = 1;
+var tiredMeter = 0;
+
+var updateStatus = function(petName, pet, error){
+	fs.writeFile(petName, JSON.stringify(pet), function(err, data){
+		if (err){
+			console.log(error);
+		}
+
+	});
+};
+
+
+var printOut = function(reaction){
+	console.log('\n~~~~ %s  ~~~~\n', reaction);
+};
+
+//create a new petFile
+var create = function(petName){
+	fs.open('~/Desktop' + petName, 'a', function opened(err, fd){
+		if (err){
+			console.log('failed to find your pet.');
+			return;
+		} else {
+			var pet = '{"name":"' + petName + '", "mood" : "happy", "isHungry" : true, "isBored" : false, "isTired" : false, "foodTS": '+ timeStamp +', "sleepTS": '+ timeStamp +'}';
+			var buffer = new Buffer(pet),
+				bufferPosition = 0,
+				bufferLength = buffer.length,
+				filePosition = null;
+			fs.write(fd, buffer, bufferPosition, bufferLength, filePosition,
+				function wrote(err, written){
+					if (err){
+						console.log("oh no! We couldn't create your pet");
+						return;
+					}
+					else {
+						printOut('🐱');
+						console.log("Hello!");
+					}
+				});
+			}
+		});
+};
+
+//check how they're doing / reset mood
+var moodCheck = function(petName){
+	if (!petName){
+		console.log("What's your pets name?");
+	} else {
+		fs.readFile('~/' + petName, 'utf8', function opened(err, data){
+			if (err) {
+				console.log("Hm, your pet seems to have run away");
+			} else {
+				var pet = JSON.parse(data);
+
+				//check if enough time has passed to update mood.
+				if (timeStamp - pet.foodTS > 20){
+					pet.isHungry = true;
+				}
+				if (timeStamp - pet.sleepTS > 60){
+					pet.isTired = true;
+				}
+
+				updateStatus(petName, pet, "Hm, your pet seems moody...");
+				
+
+				//determine mood
+				if (pet.isHungry === true || pet.isBored === true || pet.isTired === true){
+					pet.mood = 'not happy';
+					printOut("😿");
+				}
+				else {
+					pet.mood = 'happy';
+					printOut("😺");
+				}
+			}
+		});//end readFile
+	}
+};//end status
+
+//improve isTired status
+var sleep = function(petName){
+	fs.readFile('~/' + petName, 'utf8', function(err, data){
+		if (!err){
+			var pet = JSON.parse(data);
+			if (pet.isTired === true){
+				tiredMeter = 0;
+				
+				printOut('⭐️ 🌛 ⭐️');
+				printOut('😴');
+				console.log("*yawn*");
+				sleepInterval = setInterval(function(){
+					if (zCounter % 2 === 0){
+						console.log("  ZZZzzzzzZZ");
+						zCounter++;
+					} else {
+						console.log("zzzzZZZZ");
+						zCounter++;
+					}
+				}, 1000); //end sleepInterval
+
+				var that = pet;
+				setTimeout(function(){
+					//stop sleeping
+					clearInterval(sleepInterval);
+
+					//update pets tired status
+					pet.isTired = false;
+					pet.sleepTS = timeStamp;
+					updateStatus(petName, pet, "Hm.. your pet seems a little groggy...");//end writeFile
+
+					//'waking up'
+					console.log("Good morning!");
+					printOut('⛅️');
+					printOut('😸');
+
+				}, 10000);//end setTimeout
+			} else {
+				printOut('😾');
+			console.log("It's way too early for bedtime...");
+			}
+		}//end if (!err)
+	});//end fs.readFile
+};//end sleep();
+
+//improve isHungry status
+var feed = function(petName){
+	if(!petName){
+		console.log("what's your pet's name again?");
+		return;
+	}
+	fs.readFile('~/' + petName, 'utf8', function(err, data){
+		if (err){
+			console.log('what are you trying to feed your pet?!');
+			return;
+		}
+		var pet = JSON.parse(data);
+
+		if (pet.isHungry === true){
+			printOut('🍕🍕🍕');
+			printOut("😻");
+			pet.isHungry = false;
+			pet.foodTS = timeStamp;
+
+			updateStatus(petName, pet, "oh no.. stomach ache..");//end writeFile
+		} else {
+			printOut('😾');
+			console.log("Seems like they're not hungry...");
+		}
+
+	});
+};
+
+
+
+
+
+if(process.argv[2] === 'create'){
+	create(process.argv[3]);
+}
+
+if(args.join(' ') === "how are you " + args[args.length-1]){
+	moodCheck(args[args.length-1]);
+}
+
+if(args.join(' ') === "go to sleep " + args[args.length-1]){
+	sleep(args[args.length-1]);
+}
+
+if(args.join(' ') === "feed " + args[args.length-1]){
+	feed(args[args.length-1]);
+}
