@@ -10,7 +10,7 @@ if any moods are true, mood != happy.
 if mood is false, action is not allowed.
 */
 var date = new Date();
-var timeStamp = date.getHours() * 60 + date.getMinutes();
+var timeStamp = ((date.getDay() * 60) + date.getHours()) * 60 + date.getMinutes();
 timeStamp = timeStamp * 60 + date.getSeconds();
 
 
@@ -35,7 +35,7 @@ var printOut = function(reaction){
 
 //create a new petFile
 var create = function(petName){
-	fs.open('~/Desktop' + petName, 'a', function opened(err, fd){
+	fs.open('./' + petName, 'a', function opened(err, fd){
 		if (err){
 			console.log('failed to find your pet.');
 			return;
@@ -65,12 +65,11 @@ var moodCheck = function(petName){
 	if (!petName){
 		console.log("What's your pets name?");
 	} else {
-		fs.readFile('~/' + petName, 'utf8', function opened(err, data){
+		fs.readFile('./' + petName, 'utf8', function opened(err, data){
 			if (err) {
 				console.log("Hm, your pet seems to have run away");
 			} else {
 				var pet = JSON.parse(data);
-
 				//check if enough time has passed to update mood.
 				if (timeStamp - pet.foodTS > 20){
 					pet.isHungry = true;
@@ -98,7 +97,7 @@ var moodCheck = function(petName){
 
 //improve isTired status
 var sleep = function(petName){
-	fs.readFile('~/' + petName, 'utf8', function(err, data){
+	fs.readFile('./' + petName, 'utf8', function(err, data){
 		if (!err){
 			var pet = JSON.parse(data);
 			if (pet.isTired === true){
@@ -147,7 +146,7 @@ var feed = function(petName){
 		console.log("what's your pet's name again?");
 		return;
 	}
-	fs.readFile('~/' + petName, 'utf8', function(err, data){
+	fs.readFile('./' + petName, 'utf8', function(err, data){
 		if (err){
 			console.log('what are you trying to feed your pet?!');
 			return;
@@ -156,10 +155,15 @@ var feed = function(petName){
 
 		if (pet.isHungry === true){
 			printOut('🍕🍕🍕');
-			printOut("😻");
+			
+			setTimeout(function(){
+				printOut("😻");
+			}, 1000);
+			setTimeout(function(){
+				printOut("NOM NOM NOM");
+			}, 2000);
 			pet.isHungry = false;
 			pet.foodTS = timeStamp;
-
 			updateStatus(petName, pet, "oh no.. stomach ache..");//end writeFile
 		} else {
 			printOut('😾');
