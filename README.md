@@ -32,4 +32,6 @@ You'll need to feed him on occasion.
 You'll also need to make sure he gets some sleep.
 ` $tamamoji go to sleep Steve `
 
-You're doing great! And that's all you need to know. Just check out Steve from time to time and enjoy the rewards of being a pet owner: their ![smiling face](/img/happy_pet.png).
+You're doing great! And that's all you need to know. Just check out Steve from time to time and enjoy the rewards of being a pet owner: their smiling face.
+
+![smiling face](/img/happy_pet.png).
