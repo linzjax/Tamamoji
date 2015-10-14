@@ -18,6 +18,7 @@ $ cp -l tamamoji /usr/local/bin/node
 Your pet's mood is determined based on the last time you checked out it's doing. They require food and sleep at regular intervals, regardless of whether or not your terminal is open. Commands that you will need:
 
 To create your new pet, just chose a name. We'll name ours Steve.
+
 ` $tamamoji create Steve `
 
 Steve is now stored in a `Pets` folder. You can see all of the pets you've created:
