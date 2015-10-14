@@ -21,15 +21,19 @@ To create your new pet, just chose a name. We'll name ours Steve.
 ` $tamamoji create Steve `
 
 Steve is now stored in a `Pets` folder. You can see all of the pets you've created:
+
 ` $tamamoji list pets`
 
 Now we need to check out Steve is doing.
+
 ` $tamamoji how are you Steve`
 
 You'll need to feed him on occasion.
+
 ` $tamamoji feed Steve`
 
 You'll also need to make sure he gets some sleep.
+
 ` $tamamoji go to sleep Steve `
 
 You're doing great! And that's all you need to know. Just check out Steve from time to time and enjoy the rewards of being a pet owner: their smiling face.
